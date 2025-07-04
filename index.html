@@ -35,12 +35,12 @@
       </tr>
     </thead>
     <tbody>
-      <!-- JavaScript will fill rows here -->
+      <!-- JavaScript will fill this -->
     </tbody>
   </table>
 
   <script>
-    const chapters = [
+    let chapters = [
       "Physical World", "Kinematics", "Laws of Motion", "Rotational Motion", "Gravitation", "Properties of Matter", "Thermodynamics", "Behaviour of Perfect Gas and Kinetics", "Oscillations", "Waves",
       "Some Basic Concepts of Chemistry", "Structure of Atom", "Classification of Elements and Periodicity in Properties", "Chemical Bonding and Molecular Structure", "Thermodynamics", "Equilibrium", "Redox Reactions", "Organic Chemistry – Some Basic Principles and Techniques", "Hydrocarbons",
       "The Living World", "Biological Classification", "Plant Kingdom", "Animal Kingdom", "Morphology of Flowering Plants", "Anatomy of Flowering Plants", "Structural Organisation in Animals", "Cell – The Unit of Life", "Biomolecules", "Cell Cycle and Cell Division", "Photosynthesis in Higher Plants"
@@ -56,15 +56,24 @@
       "Chill, revise weak points, or practice a small test."
     ];
 
+    // 🔀 Shuffle function (Fisher-Yates)
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    shuffle(chapters); // Shuffle chapters on each load
+
     const start = new Date("2025-07-07");
+    const today = new Date().toISOString().split('T')[0];
     const tbody = document.querySelector("tbody");
+    const saved = JSON.parse(localStorage.getItem("studyPlanTicks") || "{}");
 
     function formatDate(date) {
       return date.toISOString().split('T')[0];
     }
-
-    const today = formatDate(new Date());
-    const saved = JSON.parse(localStorage.getItem("studyPlanTicks") || "{}");
 
     function saveTick(id, value) {
       saved[id] = value;
@@ -73,7 +82,6 @@
 
     for (let i = 0; i < chapters.length; i += 2) {
       for (let j = 0; j < 7; j++) {
-        const row = document.createElement("tr");
         const date = new Date(start);
         date.setDate(start.getDate() + (i / 2) * 7 + j);
         const dateStr = formatDate(date);
@@ -81,6 +89,7 @@
         const activity = activities[j];
         const uniqueId = `${dateStr}_${chapter.replace(/\s+/g, "_")}`;
 
+        const row = document.createElement("tr");
         row.innerHTML = `
           <td>${dateStr}</td>
           <td>${chapter}</td>
@@ -88,16 +97,17 @@
           <td><input type="checkbox" id="${uniqueId}"></td>
         `;
 
-        if (dateStr === today) {
-          row.style.backgroundColor = "#d1f0d1";
-          row.style.fontWeight = "bold";
-        }
-
         const checkbox = row.querySelector("input");
         checkbox.checked = saved[uniqueId] || false;
         checkbox.addEventListener("change", () => {
           saveTick(uniqueId, checkbox.checked);
         });
+
+        // Highlight today’s row
+        if (dateStr === today) {
+          row.style.backgroundColor = "#d1f0d1";
+          row.style.fontWeight = "bold";
+        }
 
         tbody.appendChild(row);
       }
