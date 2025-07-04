@@ -1,40 +1,78 @@
-<script>
-const chapters = [
-    "Physical World", "Kinematics", "Laws of Motion", "Rotational Motion", "Gravitation", "Properties of Matter", "Thermodynamics", "Behaviour of Perfect Gas and Kinetics", "Oscillations", "Waves",
-    "Some Basic Concepts of Chemistry", "Structure of Atom", "Classification of Elements and Periodicity in Properties", "Chemical Bonding and Molecular Structure", "Thermodynamics", "Equilibrium", "Redox Reactions", "Organic Chemistry – Some Basic Principles and Techniques", "Hydrocarbons",
-    "The Living World", "Biological Classification", "Plant Kingdom", "Animal Kingdom", "Morphology of Flowering Plants", "Anatomy of Flowering Plants", "Structural Organisation in Animals", "Cell – The Unit of Life", "Biomolecules", "Cell Cycle and Cell Division", "Photosynthesis in Higher Plants"
-];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Study Plan</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 10px;
+      text-align: center;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+  </style>
+</head>
+<body>
+  <h1>Daily Study Plan</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Chapter</th>
+        <th>Activity</th>
+        <th>Done</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- JavaScript will fill rows here -->
+    </tbody>
+  </table>
 
-const activities = [
-    "Read NCERT thoroughly, make short notes.",
-    "Watch related video, clear doubts, practice questions.",
-    "Read, revise, make notes for 2nd chapter.",
-    "Watch video, solve questions for 2nd chapter.",
-    "Revise both chapters, solve small quiz or mock questions.",
-    "Combine revision — solve a mixed question set from these chapters.",
-    "Chill, revise weak points, or practice a small test."
-];
+  <script>
+    const chapters = [
+      "Physical World", "Kinematics", "Laws of Motion", "Rotational Motion", "Gravitation", "Properties of Matter", "Thermodynamics", "Behaviour of Perfect Gas and Kinetics", "Oscillations", "Waves",
+      "Some Basic Concepts of Chemistry", "Structure of Atom", "Classification of Elements and Periodicity in Properties", "Chemical Bonding and Molecular Structure", "Thermodynamics", "Equilibrium", "Redox Reactions", "Organic Chemistry – Some Basic Principles and Techniques", "Hydrocarbons",
+      "The Living World", "Biological Classification", "Plant Kingdom", "Animal Kingdom", "Morphology of Flowering Plants", "Anatomy of Flowering Plants", "Structural Organisation in Animals", "Cell – The Unit of Life", "Biomolecules", "Cell Cycle and Cell Division", "Photosynthesis in Higher Plants"
+    ];
 
-const start = new Date("2025-07-07"); // fixed start date
-const tbody = document.querySelector("tbody");
+    const activities = [
+      "Read NCERT thoroughly, make short notes.",
+      "Watch related video, clear doubts, practice questions.",
+      "Read, revise, make notes for 2nd chapter.",
+      "Watch video, solve questions for 2nd chapter.",
+      "Revise both chapters, solve small quiz or mock questions.",
+      "Combine revision — solve a mixed question set from these chapters.",
+      "Chill, revise weak points, or practice a small test."
+    ];
 
-function formatDate(date) {
-    return date.toISOString().split('T')[0];
-}
+    const start = new Date("2025-07-07");
+    const tbody = document.querySelector("tbody");
 
-// Today’s date (formatted)
-const today = formatDate(new Date());
+    function formatDate(date) {
+      return date.toISOString().split('T')[0];
+    }
 
-// Load saved checkbox states
-const saved = JSON.parse(localStorage.getItem("studyPlanTicks") || "{}");
+    const today = formatDate(new Date());
+    const saved = JSON.parse(localStorage.getItem("studyPlanTicks") || "{}");
 
-function saveTick(id, value) {
-    saved[id] = value;
-    localStorage.setItem("studyPlanTicks", JSON.stringify(saved));
-}
+    function saveTick(id, value) {
+      saved[id] = value;
+      localStorage.setItem("studyPlanTicks", JSON.stringify(saved));
+    }
 
-for (let i = 0; i < chapters.length; i += 2) {
-    for (let j = 0; j < 7; j++) {
+    for (let i = 0; i < chapters.length; i += 2) {
+      for (let j = 0; j < 7; j++) {
         const row = document.createElement("tr");
         const date = new Date(start);
         date.setDate(start.getDate() + (i / 2) * 7 + j);
@@ -44,25 +82,26 @@ for (let i = 0; i < chapters.length; i += 2) {
         const uniqueId = `${dateStr}_${chapter.replace(/\s+/g, "_")}`;
 
         row.innerHTML = `
-            <td>${dateStr}</td>
-            <td>${chapter}</td>
-            <td>${activity}</td>
-            <td><input type="checkbox" id="${uniqueId}"></td>
+          <td>${dateStr}</td>
+          <td>${chapter}</td>
+          <td>${activity}</td>
+          <td><input type="checkbox" id="${uniqueId}"></td>
         `;
 
-        // ✅ Highlight today's row
         if (dateStr === today) {
-            row.style.backgroundColor = "#d1f0d1"; // Light green
-            row.style.fontWeight = "bold";
+          row.style.backgroundColor = "#d1f0d1";
+          row.style.fontWeight = "bold";
         }
 
         const checkbox = row.querySelector("input");
         checkbox.checked = saved[uniqueId] || false;
         checkbox.addEventListener("change", () => {
-            saveTick(uniqueId, checkbox.checked);
+          saveTick(uniqueId, checkbox.checked);
         });
 
         tbody.appendChild(row);
+      }
     }
-}
-</script>
+  </script>
+</body>
+</html>
