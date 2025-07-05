@@ -1,4 +1,5 @@
 <script>
+document.addEventListener("DOMContentLoaded", function () {
   let chapters = [
     "Physical World", "Kinematics", "Laws of Motion", "Rotational Motion", "Gravitation", "Properties of solids", "Mechanical Properties of Fluids", "Thermal Properties of Matter", "Thermodynamics", "Behaviour of Perfect Gas and Kinetics", "Oscillations", "Waves",
     "Some Basic Concepts of Chemistry", "Structure of Atom", "Classification of Elements and Periodicity in Properties", "Chemical Bonding and Molecular Structure", "Thermodynamics", "Chemical Equilibrium", "Ionic Equillibrium", "Redox Reactions", "Organic Chemistry – Some Basic Principles and Techniques", "Hydrocarbons",
@@ -15,7 +16,6 @@
     "Chill, revise weak points, or practice a small test."
   ];
 
-  // Shuffle function (Fisher-Yates)
   function shuffle(array) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -23,7 +23,6 @@
     }
   }
 
-  // 🔒 Save/Load shuffled chapters only once
   if (!localStorage.getItem("shuffledChapters")) {
     shuffle(chapters);
     localStorage.setItem("shuffledChapters", JSON.stringify(chapters));
@@ -76,4 +75,5 @@
       tbody.appendChild(row);
     }
   }
+});
 </script>
