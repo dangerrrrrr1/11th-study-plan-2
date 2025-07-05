@@ -1,117 +1,79 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Study Plan</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-    th, td {
-      border: 1px solid black;
-      padding: 10px;
-      text-align: center;
-    }
-    th {
-      background-color: #f2f2f2;
-    }
-  </style>
-</head>
-<body>
-  <h1>Daily Study Plan</h1>
-  <table>
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Chapter</th>
-        <th>Activity</th>
-        <th>Done</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- JavaScript will fill this -->
-    </tbody>
-  </table>
+<script>
+  let chapters = [
+    "Physical World", "Kinematics", "Laws of Motion", "Rotational Motion", "Gravitation", "Properties of solids", "Mechanical Properties of Fluids", "Thermal Properties of Matter", "Thermodynamics", "Behaviour of Perfect Gas and Kinetics", "Oscillations", "Waves",
+    "Some Basic Concepts of Chemistry", "Structure of Atom", "Classification of Elements and Periodicity in Properties", "Chemical Bonding and Molecular Structure", "Thermodynamics", "Chemical Equilibrium", "Ionic Equillibrium", "Redox Reactions", "Organic Chemistry – Some Basic Principles and Techniques", "Hydrocarbons",
+    "The Living World", "Biological Classification", "Plant Kingdom", "Animal Kingdom", "Morphology of Flowering Plants", "Anatomy of Flowering Plants", "Structural Organisation in Animals", "Cell – The Unit of Life", "Biomolecules", "Cell Cycle and Cell Division", "Photosynthesis in Higher Plants", "Respiration in Plants", "Plant Growth and Development", "Breathing and Exchange of Gases", "Body Fluids and Circulation", "Excretory Products and Their Elimination", "Locomotion and Movement", "Neural Control and Coordination", "Chemical Coordination and Integration"
+  ];
 
-  <script>
-    let chapters = [
-      "Physical World", "Kinematics", "Laws of Motion", "Rotational Motion", "Gravitation", "Properties of solids", "Mechanical Properties of Fluids", "Thermal Properties of Matter","Thermodynamics", "Behaviour of Perfect Gas and Kinetics", "Oscillations", "Waves",
-      "Some Basic Concepts of Chemistry", "Structure of Atom", "Classification of Elements and Periodicity in Properties", "Chemical Bonding and Molecular Structure", "Thermodynamics", "Chemical Equilibrium", "Ionic Equillibrium","Redox Reactions", "Organic Chemistry – Some Basic Principles and Techniques", "Hydrocarbons",
-      "The Living World", "Biological Classification", "Plant Kingdom", "Animal Kingdom", "Morphology of Flowering Plants", "Anatomy of Flowering Plants", "Structural Organisation in Animals", "Cell – The Unit of Life", "Biomolecules", "Cell Cycle and Cell Division", "Photosynthesis in Higher Plants","Respiration in Plants","Plant Growth and Development","Breathing and Exchange of Gases","Body Fluids and Circulation","Excretory Products and Their Elimination","Locomotion and Movement","Neural Control and Coordination","Chemical Coordination and Integration"
-    ];
+  const activities = [
+    "Read NCERT thoroughly, make short notes.",
+    "Watch related video, clear doubts, practice questions.",
+    "Read, revise, make notes for 2nd chapter.",
+    "Watch video, solve questions for 2nd chapter.",
+    "Revise both chapters, solve small quiz or mock questions.",
+    "Combine revision — solve a mixed question set from these chapters.",
+    "Chill, revise weak points, or practice a small test."
+  ];
 
-    const activities = [
-      "Read NCERT thoroughly, make short notes.",
-      "Watch related video, clear doubts, practice questions.",
-      "Read, revise, make notes for 2nd chapter.",
-      "Watch video, solve questions for 2nd chapter.",
-      "Revise both chapters, solve small quiz or mock questions.",
-      "Combine revision — solve a mixed question set from these chapters.",
-      "Chill, revise weak points, or practice a small test."
-    ];
+  // Shuffle function (Fisher-Yates)
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
 
-    // 🔀 Shuffle function (Fisher-Yates)
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+  // 🔒 Save/Load shuffled chapters only once
+  if (!localStorage.getItem("shuffledChapters")) {
+    shuffle(chapters);
+    localStorage.setItem("shuffledChapters", JSON.stringify(chapters));
+  } else {
+    chapters = JSON.parse(localStorage.getItem("shuffledChapters"));
+  }
+
+  const start = new Date("2025-07-07");
+  const today = new Date().toISOString().split('T')[0];
+  const tbody = document.querySelector("tbody");
+  const saved = JSON.parse(localStorage.getItem("studyPlanTicks") || "{}");
+
+  function formatDate(date) {
+    return date.toISOString().split('T')[0];
+  }
+
+  function saveTick(id, value) {
+    saved[id] = value;
+    localStorage.setItem("studyPlanTicks", JSON.stringify(saved));
+  }
+
+  for (let i = 0; i < chapters.length; i += 2) {
+    for (let j = 0; j < 7; j++) {
+      const date = new Date(start);
+      date.setDate(start.getDate() + (i / 2) * 7 + j);
+      const dateStr = formatDate(date);
+      const chapter = j < 2 ? chapters[i] : chapters[i + 1];
+      const activity = activities[j];
+      const uniqueId = `${dateStr}_${chapter.replace(/\s+/g, "_")}`;
+
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${dateStr}</td>
+        <td>${chapter}</td>
+        <td>${activity}</td>
+        <td><input type="checkbox" id="${uniqueId}"></td>
+      `;
+
+      const checkbox = row.querySelector("input");
+      checkbox.checked = saved[uniqueId] || false;
+      checkbox.addEventListener("change", () => {
+        saveTick(uniqueId, checkbox.checked);
+      });
+
+      if (dateStr === today) {
+        row.style.backgroundColor = "#d1f0d1";
+        row.style.fontWeight = "bold";
       }
+
+      tbody.appendChild(row);
     }
-
-    shuffle(chapters); // Shuffle chapters on each load
-
-    const start = new Date("2025-07-07");
-    const today = new Date().toISOString().split('T')[0];
-    const tbody = document.querySelector("tbody");
-    const saved = JSON.parse(localStorage.getItem("studyPlanTicks") || "{}");
-
-    function formatDate(date) {
-      return date.toISOString().split('T')[0];
-    }
-
-    function saveTick(id, value) {
-      saved[id] = value;
-      localStorage.setItem("studyPlanTicks", JSON.stringify(saved));
-    }
-
-    for (let i = 0; i < chapters.length; i += 2) {
-      for (let j = 0; j < 7; j++) {
-        const date = new Date(start);
-        date.setDate(start.getDate() + (i / 2) * 7 + j);
-        const dateStr = formatDate(date);
-        const chapter = j < 2 ? chapters[i] : chapters[i + 1];
-        const activity = activities[j];
-        const uniqueId = `${dateStr}_${chapter.replace(/\s+/g, "_")}`;
-
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${dateStr}</td>
-          <td>${chapter}</td>
-          <td>${activity}</td>
-          <td><input type="checkbox" id="${uniqueId}"></td>
-        `;
-
-        const checkbox = row.querySelector("input");
-        checkbox.checked = saved[uniqueId] || false;
-        checkbox.addEventListener("change", () => {
-          saveTick(uniqueId, checkbox.checked);
-        });
-
-        // Highlight today’s row
-        if (dateStr === today) {
-          row.style.backgroundColor = "#d1f0d1";
-          row.style.fontWeight = "bold";
-        }
-
-        tbody.appendChild(row);
-      }
-    }
-  </script>
-</body>
-</html>
+  }
+</script>
